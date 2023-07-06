@@ -13,5 +13,5 @@ public partial class Calendar
 
     public string EmployeeEnrolNumber { get; set; } = null!;
 
-    public virtual Employee EmployeeEnrolNumberNavigation { get; set; } = null!;
+    public virtual Employee? EmployeeEnrolNumberNavigation { get; set; }
 }

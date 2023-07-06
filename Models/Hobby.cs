@@ -13,5 +13,5 @@ public partial class Hobby
 
     public string? HobbyDescription { get; set; }
 
-    public virtual Employee EmployeeEnrolNumberNavigation { get; set; } = null!;
+    public virtual Employee? EmployeeEnrolNumberNavigation { get; set; }
 }

@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using EmployeeDb.Models;
+using System.IO;
+
 
 namespace EmployeeDb.Controllers
 {
@@ -33,17 +35,18 @@ namespace EmployeeDb.Controllers
 
         // GET: api/Employees/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Employee>> GetEmployee(string id)
+        public async Task<IEnumerable<Employee>> GetEmployee(string id)
         {
+
           if (_context.Employees == null)
           {
-              return NotFound();
+              return (IEnumerable<Employee>)NotFound();
           }
-            var employee = await _context.Employees.FindAsync(id);
+            var employee = await _context.Employees.Where(emp => emp.EmployeeEnrolNumber.Contains(id)).ToListAsync();
 
             if (employee == null)
             {
-                return NotFound();
+                return (IEnumerable<Employee>)NotFound();
             }
 
             return employee;
@@ -54,10 +57,10 @@ namespace EmployeeDb.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutEmployee(string id, Employee employee)
         {
-            if (id != employee.EmployeeEnrolNumber)
+            /*if (id != employee.EmployeeEnrolNumber)
             {
                 return BadRequest();
-            }
+            }*/
 
             _context.Entry(employee).State = EntityState.Modified;
 
@@ -65,8 +68,13 @@ namespace EmployeeDb.Controllers
             {
                 await _context.SaveChangesAsync();
             }
-            catch (DbUpdateConcurrencyException)
+            catch (DbUpdateConcurrencyException ex)
             {
+
+               ErrorLog.IdPUTError(ex);
+
+
+                Console.WriteLine("Program error occurred,informations has been sent to Errors.txt File");
                 if (!EmployeeExists(id))
                 {
                     return NotFound();
@@ -76,7 +84,7 @@ namespace EmployeeDb.Controllers
                     throw;
                 }
             }
-
+            
             return NoContent();
         }
 
